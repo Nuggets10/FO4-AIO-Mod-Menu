@@ -2,9 +2,7 @@ import ctypes
 import time
 import tkinter as tk
 
-# ---- CONFIGURAZIONE ----
-
-# Codici meteo Fallout 4
+# ---- COMMANDS LISTS ----
 WEATHER_CODES = {
     "Clear": "fw 001CC2A4",
     "Cloudy": "fw 001CC2A5",
@@ -14,7 +12,6 @@ WEATHER_CODES = {
     "Snow": "fw 001CC2B0"
 }
 
-# Codici orari Fallout 4
 TIME_COMMANDS = {
     "Midnight (00:00)": "set gamehour to 0",
     "Dawn (06:00)": "set gamehour to 6",
@@ -24,7 +21,6 @@ TIME_COMMANDS = {
     "+10 Minutes": "advancetime 0.1667"
 }
 
-# Munizioni disponibili (9999 unità)
 AMMO_COMMANDS = {
     "10mm": "player.additem 0001F276 9999",
     "5mm": "player.additem 0001F66C 9999",
@@ -46,7 +42,6 @@ AMMO_COMMANDS = {
     "Plasma Cartridge": "player.additem 00100E44 9999"
 }
 
-# Materiali disponibili (999 unità)
 MATERIAL_COMMANDS = {
     "Aluminum": "player.additem 0006907A 9999",
     "Copper": "player.additem 0006907B 9999",
@@ -62,7 +57,6 @@ MATERIAL_COMMANDS = {
     "Fiberglass": "player.additem 000AEC61 9999"
 }
 
-# Comandi per livello e peso trasportabile
 LEVEL_COMMANDS = {
     "+1 Level": "player.advlevel",
     "+10 Levels": "player.setlevel player.getlevel +10",
@@ -75,7 +69,6 @@ CARRY_WEIGHT_COMMANDS = {
     "+1000 Carry Weight": "player.modav carryweight 1000"
 }
 
-# Oggetti curativi e droghe
 HEALTH_ITEMS_COMMANDS = {
     "10 Stimpak": "player.additem 00023736 10",
     "50 Stimpak": "player.additem 00023736 50",
@@ -100,7 +93,6 @@ HEALTH_ITEMS_COMMANDS = {
     "100 Mentats": "player.additem 0002372D 100"
 }
 
-# Comandi di Teletrasporto
 FAST_TRAVEL_COMMANDS = {
     "Vault 111": "player.moveto 0001A9D7",
     "Diamond City": "player.moveto 0001A946",
@@ -110,13 +102,13 @@ FAST_TRAVEL_COMMANDS = {
     "Far Harbor": "player.moveto 000DEFF5"
 }
 
-# ---- FUNZIONI ----
+# ---- FUNCTIONS ----
 def press_key(hexKeyCode):
     ctypes.windll.user32.keybd_event(hexKeyCode, 0, 0, 0)
     ctypes.windll.user32.keybd_event(hexKeyCode, 0, 2, 0)
 
 def send_command(command):
-    press_key(0x29)  # Apri console (~)
+    press_key(0x29)
     time.sleep(0.5)
 
     for char in command:
@@ -124,22 +116,21 @@ def send_command(command):
         ctypes.windll.user32.keybd_event(ord(char), 0, 2, 0)
         time.sleep(0.05)
 
-    press_key(0x0D)  # Premi ENTER
+    press_key(0x0D)
     time.sleep(0.5)
-    press_key(0x29)  # Chiudi console
+    press_key(0x29) 
 
 def execute_command(command_dict, key):
     command = command_dict.get(key, "")
     if command:
         send_command(command)
 
-# ---- INTERFACCIA GRAFICA ----
+# ---- USER INTERFACE ----
 root = tk.Tk()
 root.title("FO4 - AIO Mod Menu")
 root.geometry("1920x1080")
 root.configure(bg="#222")
 
-# Sezioni organizzate in un layout 1920x1080
 sections = [
     ("Change Weather", WEATHER_CODES, 0, 0),
     ("Change Time", TIME_COMMANDS, 0, 1),
@@ -149,7 +140,7 @@ sections = [
     ("Increase Carry Weight", CARRY_WEIGHT_COMMANDS, 2, 1)
 ]
 
-# Creazione dinamica delle sezioni
+
 for title, command_dict, row, col in sections:
     frame = tk.Frame(root, bg="#333", padx=10, pady=10)
     frame.grid(row=row, column=col, padx=20, pady=20, sticky="nw")
@@ -161,7 +152,7 @@ for title, command_dict, row, col in sections:
         tk.Button(frame, text=key, font=("Arial", 12), width=20, height=2,
                   command=lambda k=key: execute_command(command_dict, k), bg="#555", fg="white").grid(row=(i // max_cols) + 1, column=i % max_cols, padx=5, pady=5)
 
-# Sezione aggiuntiva per le cure e droghe (terza colonna)
+
 frame_health = tk.Frame(root, bg="#333", padx=10, pady=10)
 frame_health.grid(row=0, column=2, rowspan=3, padx=20, pady=20, sticky="nw")
 
@@ -172,7 +163,6 @@ for i, key in enumerate(HEALTH_ITEMS_COMMANDS.keys()):
     tk.Button(frame_health, text=key, font=("Arial", 12), width=20, height=2,
               command=lambda k=key: execute_command(HEALTH_ITEMS_COMMANDS, k), bg="#555", fg="white").grid(row=(i // max_cols) + 1, column=i % max_cols, padx=5, pady=5)
 
-# Sezione per il Teletrasporto
 frame_teleport = tk.Frame(root, bg="#333", padx=10, pady=10)
 frame_teleport.grid(row=3, column=2, padx=20, pady=20, sticky="nw")
 
@@ -182,6 +172,4 @@ max_cols = 3
 for i, key in enumerate(FAST_TRAVEL_COMMANDS.keys()):
     tk.Button(frame_teleport, text=key, font=("Arial", 12), width=20, height=2,
               command=lambda k=key: execute_command(FAST_TRAVEL_COMMANDS, k), bg="#555", fg="white").grid(row=(i // max_cols) + 1, column=i % max_cols, padx=5, pady=5)
-
-# Avvio GUI
 root.mainloop()
